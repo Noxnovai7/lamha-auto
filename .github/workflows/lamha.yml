@@ -1,4 +1,3 @@
-
 name: Lamha Shorts
 
 on:
@@ -8,10 +7,10 @@ on:
   workflow_dispatch:
     inputs:
       task:
-        description: "run = انشر فيديو | dry = جرب بدون نشر | assets = ولّد الشعار والبانر"
-        default: "run"
+        description: "test = اختبار بدون نشر | production = انتاج وانشر فيديو حقيقي | assets = ولّد الشعار والبانر"
+        default: "test"
         type: choice
-        options: [run, dry, assets]
+        options: [test, production, assets]
 
 permissions:
   contents: write
@@ -58,7 +57,7 @@ jobs:
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
-          DRY_RUN: ${{ github.event.inputs.task == 'dry' && '1' || '0' }}
+          DRY_RUN: ${{ github.event.inputs.task == 'test' && '1' || '0' }}
           FORCE: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
         run: |
           ok=0
@@ -69,7 +68,7 @@ jobs:
           [ "$ok" = "1" ] || exit 1
 
       - name: Save state
-        if: ${{ always() && github.event.inputs.task != 'assets' && github.event.inputs.task != 'dry' }}
+        if: ${{ always() && github.event.inputs.task != 'assets' && github.event.inputs.task != 'test' }}
         run: |
           git config user.name "lamha-bot"
           git config user.email "lamha-bot@users.noreply.github.com"
@@ -81,7 +80,7 @@ jobs:
           fi
 
       - uses: actions/upload-artifact@v4
-        if: ${{ github.event.inputs.task == 'dry' }}
+        if: ${{ github.event.inputs.task == 'test' }}
         with:
           name: lamha-test-video
           path: out/video.mp4
