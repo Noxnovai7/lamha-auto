@@ -1,9 +1,10 @@
+
 name: Lamha Shorts
 
 on:
   schedule:
-    - cron: "0 3 * * *"
-    - cron: "30 6 * * *"
+    - cron: "0 3 * * *"     # 06:00 الرياض
+    - cron: "30 6 * * *"    # 09:30 الرياض
   workflow_dispatch:
     inputs:
       task:
@@ -33,7 +34,7 @@ jobs:
       - name: Install
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y ffmpeg fonts-noto-core fonts-hosny-amiri fontconfig
+          sudo apt-get install -y ffmpeg fonts-noto-core fonts-hosny-amiri fontconfig librsvg2-bin
           pip install -q edge-tts requests numpy pillow arabic-reshaper python-bidi \
             google-api-python-client google-auth google-auth-httplib2
 
