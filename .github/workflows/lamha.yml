@@ -1,4 +1,3 @@
-
 name: Lamha Shorts
 
 on:
@@ -23,7 +22,7 @@ concurrency:
 jobs:
   post:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -55,6 +54,12 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          EXTRA_LLM_URL: ${{ secrets.EXTRA_LLM_URL }}
+          EXTRA_LLM_KEY: ${{ secrets.EXTRA_LLM_KEY }}
+          EXTRA_LLM_MODEL: ${{ secrets.EXTRA_LLM_MODEL }}
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
@@ -63,7 +68,10 @@ jobs:
         run: |
           ok=0
           for i in 1 2 3; do
-            if python main.py; then ok=1; break; fi
+            rc=0
+            python main.py || rc=$?
+            if [ "$rc" = "0" ]; then ok=1; break; fi
+            if [ "$rc" = "3" ]; then echo "كل خدمات الذكاء الاصطناعي متوقفة - لا فائدة من اعادة المحاولة"; break; fi
             echo "attempt $i failed, retrying in 40s"; sleep 40
           done
           [ "$ok" = "1" ] || exit 1
